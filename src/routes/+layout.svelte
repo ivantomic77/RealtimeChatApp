@@ -1,10 +1,7 @@
 <script>
-    import { signOut } from "firebase/auth";
     import "../app.css";
-    import { provider, auth, signInWithPopup, setUser, getUser } from "../Firebase";
+    import { provider, auth, signInWithPopup, setUser, user, signOut } from "../Firebase";
     import Navbar from "../components/Navbar.svelte";
-
-    let user;
 
     const userMapper = claims => ({
         id: claims.user_id,
@@ -20,7 +17,6 @@
         } else {
             setUser(null);
         }
-        user = getUser();
     });
 
 
@@ -32,7 +28,7 @@
         signOut(auth);
     }
 
-    $: loggedIn = user !== null;
+    $: loggedIn = $user !== null;
 </script>
 
 <Navbar on:login={login} on:logout={logout} loggedIn={loggedIn} />

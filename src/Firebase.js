@@ -1,31 +1,41 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 import {
+    getFirestore, 
+    serverTimestamp,
     collection,
     addDoc,
     onSnapshot,
     query,
     where,
+    orderBy
 } from "firebase/firestore";
+import { writable } from "svelte/store";
 
-const firebaseConfig = {};
-
-let currentUser;
+const firebaseConfig = {
+    
+};
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 let db = getFirestore(app);
 
 const provider = new GoogleAuthProvider();
-const messageCollection = collection(db, "message");
+const messageCollection = collection(db, "messages");
 
-export function setUser(user) {
-    currentUser = user;
+export const user = writable(null);
+
+export function setUser(userData) {
+    user.set(userData);
 }
-export function getUser() {
-    return currentUser;
-}
+
+onAuthStateChanged(auth, (userAuth) => {
+    if (userAuth) {
+        setUser(userAuth);
+    } else {
+        setUser(null);
+    }
+});
 
 export {
     app,
@@ -38,4 +48,7 @@ export {
     onSnapshot,
     where,
     query,
+    serverTimestamp,
+    orderBy,
+    signOut
 };
